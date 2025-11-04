@@ -335,24 +335,41 @@ def image_to_robot_coords(dice_coords):
     """
     Swap X,Y coordinates and apply affine transformation to get robot X,Y.
     """
-    # Affine transformation matrix
-    affine_matrix = np.array([
+    # Fanuc affine matrix
+    fanuc_affine_matrix = np.array([
         [1.48414, -0.089869, -535.93],
         [0.070689, 1.464, 220.31]
     ])
 
-    robot_coords = []
+    fanuc_coords = []
     for cx, cy in dice_coords:
         # Swap X and Y
         img_pt = np.array([cy, cx, 1])  # [Y, X, 1] for affine
-        rx, ry = affine_matrix @ img_pt
-        robot_coords.append((rx, ry))
+        fx, fy = fanuc_affine_matrix @ img_pt
+        fanuc_coords.append((fx, fy))
 
-    print("\nDice coordinates converted to robot X,Y:")
-    for i, (rx, ry) in enumerate(robot_coords, start=1):
-        print(f"Die {i}: X={rx:.2f}, Y={ry:.2f}")
+    print("\nDice coordinates converted to Fanuc X,Y:")
+    for i, (fx, fy) in enumerate(fanuc_coords, start=1):
+        print(f"Die {i}: X={fx:.2f}, Y={fy:.2f}")
 
-    return robot_coords
+    # StandardBot affine matrix
+    standard_affine_matrix = np.array([
+        [-0.00151949, 0.0000987, 0.4648],
+        [-0.0001228, -0.001549, 2.293]
+    ])
+
+    standard_coords = []
+    for cx, cy in dice_coords:
+        # Swap X and Y
+        img_pt = np.array([cy, cx, 1])  # [Y, X, 1] for affine
+        sx, sy = standard_affine_matrix @ img_pt
+        standard_coords.append((sx, sy))
+
+    print("\nDice coordinates converted to Standard X,Y:")
+    for i, (sx, sy) in enumerate(standard_coords, start=1):
+        print(f"Die {i}: X={sx:.2f}, Y={sy:.2f}")
+
+    return fanuc_coords, standard_coords
 
 
 if __name__ == "__main__":
