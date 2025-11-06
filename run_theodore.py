@@ -99,12 +99,18 @@ print("Brent")
 
 get_position_info()
 
-gripper_command('close')
-gripper_command('open')
-gripper_command('close')
+# gripper_command('close')
+# gripper_command('open')
+# gripper_command('close')
 
 move_robot_joint(0.002951115369796753, -0.0009422596776857972, -1.569915533065796, 0.004852112848311663, 1.5750012397766113, -3.1428329944610596)
 
-move_robot_cartesian(-0.9011022553580881, 0.17155872212321605, 0.5876427654587109)
+def HOME():
+	move_robot_joint(0.002951115369796753, -0.0009422596776857972, -1.569915533065796, 0.004852112848311663, 1.5750012397766113, -3.1428329944610596)
+	print('Theodore move to home position')
+
+HOME()
+
+# move_robot_cartesian(-0.7011022553580881, 0.17155872212321605, 0.5876427654587109)
 
 
