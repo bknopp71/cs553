@@ -76,10 +76,10 @@ def move_robot_cartesian(x,y,z):
 			orientation=models.Orientation(
 				kind=models.OrientationKindEnum.Quaternion,
 				quaternion=models.Quaternion(
-					-0.50344496,
-					-0.4864938,
-					0.0513632,
-					-0.496033247,
+					-0.0031365594398657447,
+					0.7087946554159895,
+					-0.00016275162300366026,
+					0.7054078763102367,
                 ),
             ),
         ).ok()
@@ -94,7 +94,7 @@ def move_robot_joint(j1, j2, j3, j4, j5, j6):
 			joint_rotation=arm_rotations,
 		)
 		sdk.movement.position.set_arm_position(position_request).ok()
-		
+
 print("Brent")
 
 get_position_info()
@@ -102,4 +102,9 @@ get_position_info()
 gripper_command('close')
 gripper_command('open')
 gripper_command('close')
+
+move_robot_joint(0.002951115369796753, -0.0009422596776857972, -1.569915533065796, 0.004852112848311663, 1.5750012397766113, -3.1428329944610596)
+
+move_robot_cartesian(-0.9011022553580881, 0.17155872212321605, 0.5876427654587109)
+
 
