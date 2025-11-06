@@ -84,7 +84,17 @@ def move_robot_cartesian(x,y,z):
             ),
         ).ok()
 
-
+def move_robot_joint(j1, j2, j3, j4, j5, j6):
+	with sdk.connection():
+		sdk.movement.brakes.unbrake().ok()
+		arm_rotations = models.ArmJointRotations(joints=(j1, j2, j3, j4, j5, j6))
+		#Log to ensure the values are correct
+		position_request = models.ArmPositionUpdateRequest(
+			kind=models.ArmPositionUpdateRequestKindEnum.JointRotation,
+			joint_rotation=arm_rotations,
+		)
+		sdk.movement.position.set_arm_position(position_request).ok()
+		
 print("Brent")
 
 get_position_info()
