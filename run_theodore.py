@@ -62,6 +62,27 @@ def gripper_command(STRING):
 	if STRING == 'close':
 		print('CLOSING GRIPPER')
 		gripper_request(0.032,10.0)
+		
+def move_robot_cartesian(x,y,z):
+	with sdk.connection():
+		sdk.movement.brakes.unbrake().ok()
+		sdk.movement.position.move(
+			position=models.Position(
+				unit_kind=models.LinearUnitKind.Meters,
+				x=x,
+				y=y,
+				z=z,
+            ),
+			orientation=models.Orientation(
+				kind=models.OrientationKindEnum.Quaternion,
+				quaternion=models.Quaternion(
+					-0.50344496,
+					-0.4864938,
+					0.0513632,
+					-0.496033247,
+                ),
+            ),
+        ).ok()
 
 
 print("Brent")
@@ -71,3 +92,4 @@ get_position_info()
 gripper_command('close')
 gripper_command('open')
 gripper_command('close')
+
