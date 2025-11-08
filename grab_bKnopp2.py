@@ -1,3 +1,278 @@
+import cv2
+import numpy as np
+import mvsdk
+import time
+from standardbots import StandardBotsRobot, models
+
+sdk = StandardBotsRobot(
+    url = "http://10.8.4.11:3000",
+    token = "8geqfqu0-qbbkig-ozwgr4-tl2xfj7",
+    robot_kind=StandardBotsRobot.RobotKind.Live
+)
+
+
+def get_position_info():
+    with sdk.connection():
+        print("Connected to Standard Bots server successfully!")
+        sdk.movement.brakes.unbrake().ok()
+        print("unbraked successfully!")
+        response = sdk.movement.position.get_arm_position()
+
+        try:
+            data = response.ok()
+            j_1, j_2, j_3, j_4, j_5, j_6 = data.joint_rotations
+            position = data.tooltip_position.position
+            orientation = data.tooltip_position.orientation
+            joints = data.joint_rotations
+
+            print(f"Joints: {joints}")
+            print(f"Got Position: {position}")
+            print(f"Got orientation: {orientation}")
+
+            return j_1, j_2, j_3, j_4, j_5, j_6
+
+        except Exception:
+            print(response.data.message )
+            
+def gripper_request(WIDTH, FORCE):
+    with sdk.connection():
+        response = sdk.equipment.control_gripper(
+            models.GripperCommandRequest(
+                kind=models.GripperKindEnum.Onrobot2Fg14,
+                onrobot_2fg14=models.OnRobot2FG14GripperCommandRequest(
+                    grip_direction=models.LinearGripDirectionEnum.Inward,
+                    target_grip_width=models.LinearUnit(
+                        value=WIDTH, unit_kind=models.LinearUnitKind.Meters
+                    ),
+                    target_force=models.ForceUnit(
+                        value=FORCE,
+                        unit_kind=models.ForceUnitKind.Newtons,
+                    ),
+                    control_kind=models.OnRobot2FG14ControlKindEnum.Move,
+                ),
+            )
+        )
+    try:
+        data = response.ok()
+    except Exception:
+        print(response.data.message)
+    
+def gripper_command(STRING):
+    if STRING == 'open':
+        print('OPENING GRIPPER')
+        gripper_request(0.11, 10.0)
+    if STRING == 'close':
+        print('CLOSING GRIPPER')
+        gripper_request(0.032,10.0)
+        
+def move_robot_cartesian(x,y,z, a = -0.0031365594398657447, b = 0.7087946554159895, c = -0.00016275162300366026, d = 0.7054078763102367):
+        
+    with sdk.connection():
+        sdk.movement.brakes.unbrake().ok()
+        sdk.movement.position.move(
+            position=models.Position(
+                unit_kind=models.LinearUnitKind.Meters,
+                x=x,
+                y=y,
+                z=z,
+            ),
+            orientation=models.Orientation(
+                kind=models.OrientationKindEnum.Quaternion,
+                quaternion=models.Quaternion(
+                    a,
+                    b, 
+                    c,
+                    d,
+                ),
+            ),
+        ).ok()
+
+def move_robot_joint(j1, j2, j3, j4, j5, j6):
+    with sdk.connection():
+        sdk.movement.brakes.unbrake().ok()
+        arm_rotations = models.ArmJointRotations(joints=(j1, j2, j3, j4, j5, j6))
+        #Log to ensure the values are correct
+        position_request = models.ArmPositionUpdateRequest(
+            kind=models.ArmPositionUpdateRequestKindEnum.JointRotation,
+            joint_rotation=arm_rotations,
+        )
+        sdk.movement.position.set_arm_position(position_request).ok()
+
+print("Brent")
+
+get_position_info()
+
+# gripper_command('close')
+# gripper_command('open')
+# gripper_command('close')
+
+move_robot_joint(0.002951115369796753, -0.0009422596776857972, -1.569915533065796, 0.004852112848311663, 1.5750012397766113, -3.1428329944610596)
+
+def HOME():
+    move_robot_joint(0.002951115369796753, -0.0009422596776857972, -1.569915533065796, 0.004852112848311663, 1.5750012397766113, -3.1428329944610596)
+    print('Theodore move to home position')
+
+
+
+#gripper_command('close')
+#gripper_command('open')
+#gripper_command('close')
+
+
+def pick_up_1():
+
+    above_x = -.8822
+    above_y = .4614
+    above_z = .4569
+
+    x = -.8822
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    gripper_command('open')
+    move_robot_cartesian(x, y, z)
+    gripper_command('close')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+def pick_up_2():
+
+    above_x = -.8022
+    above_y = .4614
+    above_z = .4569
+
+    x = -.8022
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    gripper_command('open')
+    move_robot_cartesian(x, y, z)
+    gripper_command('close')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+def pick_up_3():
+
+    above_x = -.7195
+    above_y = .4614
+    above_z = .4569
+
+    x = -.7195
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    gripper_command('open')
+    move_robot_cartesian(x, y, z)
+    gripper_command('close')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+def pick_up_4():
+
+    above_x = -.6368
+    above_y = .4614
+    above_z = .4569
+
+    x = -.6368
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    gripper_command('open')
+    move_robot_cartesian(x, y, z)
+    gripper_command('close')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+
+def drop_off_1():
+
+    above_x = -.8822
+    above_y = .4614
+    above_z = .46
+
+    x = -.8822
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    move_robot_cartesian(x, y, z)
+    gripper_command('open')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+def drop_off_2():
+
+    above_x = -.8022
+    above_y = .4614
+    above_z = .46
+
+    x = -.8022
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    move_robot_cartesian(x, y, z)
+    gripper_command('open')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+def drop_off_3():
+
+    above_x = -.7195
+    above_y = .4614
+    above_z = .46
+
+    x = -.7195
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    move_robot_cartesian(x, y, z)
+    gripper_command('open')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+def drop_off_4():
+
+    above_x = -.6368
+    above_y = .4614
+    above_z = .46
+
+    x = -.6368
+    y = .4614
+    z = .3632   
+
+    move_robot_cartesian(above_x, above_y, above_z)
+    move_robot_cartesian(x, y, z)
+    gripper_command('open')
+    move_robot_cartesian(above_x, above_y, above_z)
+
+def pick_up(x, y, theta):
+
+    offset_x = 0.012
+    offset_y = -0.02
+    above_z = .46  
+    pick_up_z = .41
+    
+    move_robot_cartesian(x+offset_x, y+offset_y, above_z)
+    move_robot_cartesian(x+offset_x, y+offset_y, pick_up_z)
+
+    gripper_command('open')
+    j1, j2, j3, j4, j5, j6 = get_position_info()
+    rad = theta * 3.14/180
+    j6 = j6+rad
+    move_robot_joint(j1, j2, j3, j4, j5, j6)
+    # off_set_z_pick = 0.36
+
+    vertical_drop = -1.3*3.14/180
+    # vertical decent in joint movement to the die
+    j2 = j2 + vertical_drop
+    move_robot_joint(j1, j2, j3, j4, j5, j6)
+    gripper_command('close')
+    j2 = j2 - vertical_drop
+    move_robot_joint(j1, j2, j3, j4, j5, j6)
+    move_robot_cartesian(x+offset_x, y+offset_y, pick_up_z)
+    drop_off_3()
+
+
+   
 
     # move_robot_cartesian(x+offset_x, y+offset_y, orien_z + 0.18)
     #move_robot_cartesian(x, y, above_z, orien_x, orien_y, orien_z, orien_w)
@@ -180,6 +455,8 @@ if __name__ == "__main__":
     robot_coords = image_to_robot_coords(dice_coords)  # Convert to robot coordinate4
     print(robot_coords[1][-1][0], robot_coords[1][-1][1], robot_coords[1][-1][2])
     pick_up(robot_coords[1][-1][0], robot_coords[1][-1][1], robot_coords[1][-1][2])
+
+    #pick_up(-.2776, .879, 0)
 
 
 # print("COORDINATES: ", robot_coords)
