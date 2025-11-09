@@ -4,6 +4,7 @@ import cv2
 
 #Takes image path as input and returns clump center coordinates as output
 def detect_dice_clumps(image_path, merge_distance=60, min_area=300, box_scale=1.00, area_threshold=6000):
+
     """
     Detect yellow dice in an image, merge close boxes, and return center coordinates (cx, cy, c_theta)
     of boxes with area > area_threshold, formatted for image_to_robot_coords().
@@ -105,3 +106,29 @@ def detect_dice_clumps(image_path, merge_distance=60, min_area=300, box_scale=1.
 
     # --- RETURN (cx, cy, c_theta) FOR EACH DIE ---
     return clump_coords
+
+
+#### CLUMP BREAKING FUNCTION FOR FANUC
+def DJ_bulldozer_pull(x, y, z, w, p, r):
+    bulldoze1_up = [x-100, y-100, z+100, w, p, r]
+    bulldoze1 = [x-100, y-100, z-30, w, p, r]
+    bulldoze2_up = [x+100, y+100, z+100, w, p, r]
+    bulldoze2 = [x+100, y+100, z-30, w, p, r]
+
+    robotDJ.schunk_gripper('open')
+    robotDJ.write_cartesian_position(bulldoze2_up)
+    robotDJ.write_cartesian_position(bulldoze2)
+    robotDJ.write_cartesian_position(bulldoze1)
+    robotDJ.write_cartesian_position(bulldoze1_up)
+
+def DJ_bulldozer_push(x, y, z, w, p, r):
+    bulldoze1_up = [x-100, y-100, z+100, w, p, r]
+    bulldoze1 = [x-100, y-100, z-30, w, p, r]
+    bulldoze2_up = [x+100, y+100, z+100, w, p, r]
+    bulldoze2 = [x+100, y+100, z-30, w, p, r]
+
+    robotDJ.schunk_gripper('open')
+    robotDJ.write_cartesian_position(bulldoze1_up)
+    robotDJ.write_cartesian_position(bulldoze1)
+    robotDJ.write_cartesian_position(bulldoze2)
+    robotDJ.write_cartesian_position(bulldoze2_up)
